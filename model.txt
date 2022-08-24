@@ -1,0 +1,18 @@
+model
+{
+    for (pi in 1:p) {
+        delta[pi] ~ dbern(theta)
+        beta[pi] ~ dnorm(0, Gamma * ((1 - delta[pi]) * nu_0 + 
+            delta[pi] * nu_1))
+    }
+    for (ii in 1:ni) {
+        phi[ii] <- inprod(beta[1:p], V[ii, 1:p])
+    }
+    for (j in 1:N) {
+        yhat[j] <- phi[i[j]]/(1 + exp(-t[j]/phi3))
+        Y[j] ~ dnorm(yhat[j], sd = sigma)
+    }
+    sigma ~ dinvgamma(1/2, 1/2)
+    Gamma ~ dinvgamma(1/2, 1/2)
+    theta ~ dbeta(1, p)
+}

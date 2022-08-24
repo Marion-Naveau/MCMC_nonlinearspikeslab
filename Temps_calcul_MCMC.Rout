@@ -1,0 +1,331 @@
+
+R version 4.1.1 (2021-08-10) -- "Kick Things"
+Copyright (C) 2021 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R est un logiciel libre livré sans AUCUNE GARANTIE.
+Vous pouvez le redistribuer sous certaines conditions.
+Tapez 'license()' ou 'licence()' pour plus de détails.
+
+R est un projet collaboratif avec de nombreux contributeurs.
+Tapez 'contributors()' pour plus d'information et
+'citation()' pour la façon de le citer dans les publications.
+
+Tapez 'demo()' pour des démonstrations, 'help()' pour l'aide
+en ligne ou 'help.start()' pour obtenir l'aide au format HTML.
+Tapez 'q()' pour quitter R.
+
+INFO : Large data should be stored in your work/ folder. 
+ 
+[Sauvegarde de la session précédente restaurée]
+
+> rm(list = ls())
+> 
+> library(ggplot2)
+> library(nlme)
+> library(cowplot)
+> library(glmnet)
+Le chargement a nécessité le package : Matrix
+Loaded glmnet 4.1-3
+> library(mvnfast)
+> library(nimble)
+nimble version 0.12.2 is loaded.
+For more information on NIMBLE and a User Manual,
+please visit https://R-nimble.org.
+
+Attachement du package : ‘nimble’
+
+L'objet suivant est masqué depuis ‘package:stats’:
+
+    simulate
+
+> library(microbenchmark)
+> 
+> source("Simul_donnees_Marion.R")
+── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──
+✔ tibble  3.1.6     ✔ dplyr   1.0.8
+✔ tidyr   1.2.0     ✔ stringr 1.4.0
+✔ readr   2.1.2     ✔ forcats 0.5.1
+✔ purrr   0.3.4     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::collapse() masks nlme::collapse()
+✖ tidyr::expand()   masks Matrix::expand()
+✖ dplyr::filter()   masks stats::filter()
+✖ dplyr::lag()      masks stats::lag()
+✖ tidyr::pack()     masks Matrix::pack()
+✖ tidyr::unpack()   masks Matrix::unpack()
+Joining, by = "Id"
+Message d'avis :
+The `x` argument of `as_tibble.matrix()` must have unique column names if `.name_repair` is omitted as of tibble 2.0.0.
+Using compatibility `.name_repair`.
+This warning is displayed once every 8 hours.
+Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated. 
+> source("nimble_fit_functions.R")
+> 
+> #nimbleMCMC_object = OneVariableParamSpikeAndSlabDelay_marginal_delta_setup(data_input)
+> 
+> temps=microbenchmark(FitOneVariableParamSpikeAndSlabDelay_marginal_delta_slow(data = data_input, nu_0 = 0.04, niter = 3000),times=5,unit="s")
+Defining model
+  [Note] Registering 'dmix2norm_unsafe' as a distribution based on its use in BUGS code. If you make changes to the nimbleFunctions for the distribution, you must call 'deregisterDistributions' before using the distribution in BUGS code for those changes to take effect.
+Building model
+Setting data and initial values
+Running calculate on model
+  [Note] Any error reports that follow may simply reflect missing values in model variables.
+Checking model sizes and dimensions
+  [Note] safeDeparse: truncating deparse output to 1 lines.
+===== Monitors =====
+thin = 1: alpha, alpha_prior, eta, eta_prior, Gamma2, Gamma2_prior, mu, mu_prior, sigma2, sigma2_prior
+===== Samplers =====
+RW sampler (707)
+  - Gamma2
+  - sigma2
+  - alpha
+  - eta[]  (2 elements)
+  - beta[]  (500 elements)
+  - psi[]  (2 elements)
+  - phi[]  (200 elements)
+posterior_predictive_branch sampler (2)
+  - alpha_prior
+  - eta_prior
+posterior_predictive sampler (3)
+  - sigma2_prior
+  - Gamma2_prior
+  - mu_prior
+conjugate sampler (1)
+  - mu
+Defining model
+Building model
+Setting data and initial values
+Running calculate on model
+  [Note] Any error reports that follow may simply reflect missing values in model variables.
+Checking model sizes and dimensions
+Checking model calculations
+  [Note] safeDeparse: truncating deparse output to 1 lines.
+Compiling
+  [Note] This may take a minute.
+  [Note] Use 'showCompilerOutput = TRUE' to see C++ compilation details.
+Running chain 1 ...
+|-------------|-------------|-------------|-------------|
+|-------------------------------------------------------|
+Running chain 2 ...
+|-------------|-------------|-------------|-------------|
+|-------------------------------------------------------|
+Running chain 3 ...
+|-------------|-------------|-------------|-------------|
+|-------------------------------------------------------|
+  [Warning] There are individual pWAIC values that are greater than 0.4. This may indicate that the WAIC estimate is unstable (Vehtari et al., 2017), at least in cases without grouping of data nodes or multivariate data nodes.
+Defining model
+Building model
+Setting data and initial values
+Running calculate on model
+  [Note] Any error reports that follow may simply reflect missing values in model variables.
+Checking model sizes and dimensions
+  [Note] safeDeparse: truncating deparse output to 1 lines.
+===== Monitors =====
+thin = 1: alpha, alpha_prior, eta, eta_prior, Gamma2, Gamma2_prior, mu, mu_prior, sigma2, sigma2_prior
+===== Samplers =====
+RW sampler (707)
+  - Gamma2
+  - sigma2
+  - alpha
+  - eta[]  (2 elements)
+  - beta[]  (500 elements)
+  - psi[]  (2 elements)
+  - phi[]  (200 elements)
+posterior_predictive_branch sampler (2)
+  - alpha_prior
+  - eta_prior
+posterior_predictive sampler (3)
+  - sigma2_prior
+  - Gamma2_prior
+  - mu_prior
+conjugate sampler (1)
+  - mu
+Defining model
+Building model
+Setting data and initial values
+Running calculate on model
+  [Note] Any error reports that follow may simply reflect missing values in model variables.
+Checking model sizes and dimensions
+Checking model calculations
+  [Note] safeDeparse: truncating deparse output to 1 lines.
+Compiling
+  [Note] This may take a minute.
+  [Note] Use 'showCompilerOutput = TRUE' to see C++ compilation details.
+Running chain 1 ...
+|-------------|-------------|-------------|-------------|
+|-------------------------------------------------------|
+Running chain 2 ...
+|-------------|-------------|-------------|-------------|
+|-------------------------------------------------------|
+Running chain 3 ...
+|-------------|-------------|-------------|-------------|
+|-------------------------------------------------------|
+  [Warning] There are individual pWAIC values that are greater than 0.4. This may indicate that the WAIC estimate is unstable (Vehtari et al., 2017), at least in cases without grouping of data nodes or multivariate data nodes.
+Defining model
+Building model
+Setting data and initial values
+Running calculate on model
+  [Note] Any error reports that follow may simply reflect missing values in model variables.
+Checking model sizes and dimensions
+  [Note] safeDeparse: truncating deparse output to 1 lines.
+===== Monitors =====
+thin = 1: alpha, alpha_prior, eta, eta_prior, Gamma2, Gamma2_prior, mu, mu_prior, sigma2, sigma2_prior
+===== Samplers =====
+RW sampler (707)
+  - Gamma2
+  - sigma2
+  - alpha
+  - eta[]  (2 elements)
+  - beta[]  (500 elements)
+  - psi[]  (2 elements)
+  - phi[]  (200 elements)
+posterior_predictive_branch sampler (2)
+  - alpha_prior
+  - eta_prior
+posterior_predictive sampler (3)
+  - sigma2_prior
+  - Gamma2_prior
+  - mu_prior
+conjugate sampler (1)
+  - mu
+Defining model
+Building model
+Setting data and initial values
+Running calculate on model
+  [Note] Any error reports that follow may simply reflect missing values in model variables.
+Checking model sizes and dimensions
+Checking model calculations
+  [Note] safeDeparse: truncating deparse output to 1 lines.
+Compiling
+  [Note] This may take a minute.
+  [Note] Use 'showCompilerOutput = TRUE' to see C++ compilation details.
+Running chain 1 ...
+|-------------|-------------|-------------|-------------|
+|-------------------------------------------------------|
+Running chain 2 ...
+|-------------|-------------|-------------|-------------|
+|-------------------------------------------------------|
+Running chain 3 ...
+|-------------|-------------|-------------|-------------|
+|-------------------------------------------------------|
+  [Warning] There are individual pWAIC values that are greater than 0.4. This may indicate that the WAIC estimate is unstable (Vehtari et al., 2017), at least in cases without grouping of data nodes or multivariate data nodes.
+Defining model
+Building model
+Setting data and initial values
+Running calculate on model
+  [Note] Any error reports that follow may simply reflect missing values in model variables.
+Checking model sizes and dimensions
+  [Note] safeDeparse: truncating deparse output to 1 lines.
+===== Monitors =====
+thin = 1: alpha, alpha_prior, eta, eta_prior, Gamma2, Gamma2_prior, mu, mu_prior, sigma2, sigma2_prior
+===== Samplers =====
+RW sampler (707)
+  - Gamma2
+  - sigma2
+  - alpha
+  - eta[]  (2 elements)
+  - beta[]  (500 elements)
+  - psi[]  (2 elements)
+  - phi[]  (200 elements)
+posterior_predictive_branch sampler (2)
+  - alpha_prior
+  - eta_prior
+posterior_predictive sampler (3)
+  - sigma2_prior
+  - Gamma2_prior
+  - mu_prior
+conjugate sampler (1)
+  - mu
+Defining model
+Building model
+Setting data and initial values
+Running calculate on model
+  [Note] Any error reports that follow may simply reflect missing values in model variables.
+Checking model sizes and dimensions
+Checking model calculations
+  [Note] safeDeparse: truncating deparse output to 1 lines.
+Compiling
+  [Note] This may take a minute.
+  [Note] Use 'showCompilerOutput = TRUE' to see C++ compilation details.
+Running chain 1 ...
+|-------------|-------------|-------------|-------------|
+|-------------------------------------------------------|
+Running chain 2 ...
+|-------------|-------------|-------------|-------------|
+|-------------------------------------------------------|
+Running chain 3 ...
+|-------------|-------------|-------------|-------------|
+|-------------------------------------------------------|
+  [Warning] There are individual pWAIC values that are greater than 0.4. This may indicate that the WAIC estimate is unstable (Vehtari et al., 2017), at least in cases without grouping of data nodes or multivariate data nodes.
+Defining model
+Building model
+Setting data and initial values
+Running calculate on model
+  [Note] Any error reports that follow may simply reflect missing values in model variables.
+Checking model sizes and dimensions
+  [Note] safeDeparse: truncating deparse output to 1 lines.
+===== Monitors =====
+thin = 1: alpha, alpha_prior, eta, eta_prior, Gamma2, Gamma2_prior, mu, mu_prior, sigma2, sigma2_prior
+===== Samplers =====
+RW sampler (707)
+  - Gamma2
+  - sigma2
+  - alpha
+  - eta[]  (2 elements)
+  - beta[]  (500 elements)
+  - psi[]  (2 elements)
+  - phi[]  (200 elements)
+posterior_predictive_branch sampler (2)
+  - alpha_prior
+  - eta_prior
+posterior_predictive sampler (3)
+  - sigma2_prior
+  - Gamma2_prior
+  - mu_prior
+conjugate sampler (1)
+  - mu
+Defining model
+Building model
+Setting data and initial values
+Running calculate on model
+  [Note] Any error reports that follow may simply reflect missing values in model variables.
+Checking model sizes and dimensions
+Checking model calculations
+  [Note] safeDeparse: truncating deparse output to 1 lines.
+Compiling
+  [Note] This may take a minute.
+  [Note] Use 'showCompilerOutput = TRUE' to see C++ compilation details.
+Running chain 1 ...
+|-------------|-------------|-------------|-------------|
+|-------------------------------------------------------|
+Running chain 2 ...
+|-------------|-------------|-------------|-------------|
+|-------------------------------------------------------|
+Running chain 3 ...
+|-------------|-------------|-------------|-------------|
+|-------------------------------------------------------|
+  [Warning] There are individual pWAIC values that are greater than 0.4. This may indicate that the WAIC estimate is unstable (Vehtari et al., 2017), at least in cases without grouping of data nodes or multivariate data nodes.
+> 
+> save(temps,file="Temps_MCMC_004.Rdata")
+> #mcmc_out_marginal_delta = FitOneVariableParamSpikeAndSlabDelay_marginal_delta_slow(data = data_input, nu_0 = nu_0, niter = 3000)
+> 
+> load("Temps_MCMC.Rdata") #nu0=0.01
+> temps
+Unit: seconds
+                                                                                                        expr
+ FitOneVariableParamSpikeAndSlabDelay_marginal_delta_slow(data = data_input,      nu_0 = 0.01, niter = 3000)
+      min       lq     mean   median       uq      max neval
+ 623.7198 626.9423 631.9753 629.5087 636.1083 643.5973     5
+> 
+> load("Temps_MCMC_004.Rdata") #nu0=0.04
+> temps
+Unit: seconds
+                                                                                                        expr
+ FitOneVariableParamSpikeAndSlabDelay_marginal_delta_slow(data = data_input,      nu_0 = 0.04, niter = 3000)
+      min       lq     mean   median       uq      max neval
+ 541.8692 543.2439 549.1228 545.1642 556.9178 558.4188     5
+> 
+> proc.time()
+utilisateur     système      écoulé 
+   2730.937      13.408    2755.272 

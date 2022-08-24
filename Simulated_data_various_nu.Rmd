@@ -1,0 +1,377 @@
+---
+title: "nonlinearspikeslab"
+output:
+  html_document:
+    variant: markdown_github
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(nonlinearspikeslab)
+library(nimble)
+library(tidyverse)
+```
+
+```{r}
+source("Simul_donnees_Marion.R")
+```
+
+```{r}
+PlotSimulatedData(data_input, maxspecies = 30)
+```
+# nu_0 = 0.01
+
+```{r}
+nu_0 = 0.01
+set.seed(1)
+system.time({mcmc_out_marginal_delta = FitOneVariableParamSpikeAndSlabDelay_marginal_delta_slow(data = data_input, nu_0 = nu_0, niter = 10000)})
+
+saveRDS(object = mcmc_out_marginal_delta, file = paste("simul_donnees_Marion_p", p, "_nu0_", nu_0, "_marginal_delta.rds", sep = ""))
+
+# mcmc_out_marginal_delta = readRDS(file = paste("simul_donnees_Marion_p", p, "_marginal_delta.rds", sep = ""))
+
+```
+
+
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta, parnames = c("Gamma2", "sigma2")) + scale_y_log10()
+```
+
+```{r}
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("sigma2", "Gamma2")) + scale_x_log10()
+```
+
+```{r}
+CorrelationPlot(mcmc_out = mcmc_out_marginal_delta, parnames = c("Gamma2", "sigma2"))
+```
+
+
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta, parnames = c("psi"))
+```
+```{r}
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("psi"))
+```
+
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta, parnames = c("alpha"))
+```
+
+```{r}
+# PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("eta", "alpha"))
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("alpha"))
+```
+
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta, parnames = c("mu"))
+```
+
+```{r}
+# PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("eta", "alpha"))
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("mu"))
+```
+
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta, parnames = c("beta[1]", "beta[2]", "beta[3]", "beta[4]", "beta[5]", "beta[6]"))
+```
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta,parnames = paste("phi[", 1:9, "]", sep = ""))
+```
+
+```{r}
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("beta"))
+```
+
+```{r}
+# PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("mu", "sigma2", "Gamma2", "psi")) + scale_x_log10()
+```
+```{r}
+posterior_predictive_estimate(data = data_input, mcmc_out = mcmc_out_marginal_delta, maxspecies = 20)
+```
+
+
+
+# nu_0 = 0.1
+
+```{r}
+nu_0 = 0.1
+set.seed(1)
+system.time({mcmc_out_marginal_delta = FitOneVariableParamSpikeAndSlabDelay_marginal_delta_slow(data = data_input, nu_0 = nu_0, niter = 10000)})
+
+saveRDS(object = mcmc_out_marginal_delta, file = paste("simul_donnees_Marion_p", p, "_nu0_", nu_0, "_marginal_delta.rds", sep = ""))
+
+# mcmc_out_marginal_delta = readRDS(file = paste("simul_donnees_Marion_p", p, "_marginal_delta.rds", sep = ""))
+
+```
+
+
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta, parnames = c("Gamma2", "sigma2")) + scale_y_log10()
+```
+
+```{r}
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("sigma2", "Gamma2")) + scale_x_log10()
+```
+
+```{r}
+CorrelationPlot(mcmc_out = mcmc_out_marginal_delta, parnames = c("Gamma2", "sigma2"))
+```
+
+
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta, parnames = c("psi"))
+```
+```{r}
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("psi"))
+```
+
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta, parnames = c("alpha"))
+```
+
+```{r}
+# PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("eta", "alpha"))
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("alpha"))
+```
+
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta, parnames = c("mu"))
+```
+
+```{r}
+# PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("eta", "alpha"))
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("mu"))
+```
+
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta, parnames = c("beta[1]", "beta[2]", "beta[3]", "beta[4]", "beta[5]", "beta[6]"))
+```
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta,parnames = paste("phi[", 1:9, "]", sep = ""))
+```
+
+```{r}
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("beta"))
+```
+
+```{r}
+# PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("mu", "sigma2", "Gamma2", "psi")) + scale_x_log10()
+```
+```{r}
+posterior_predictive_estimate(data = data_input, mcmc_out = mcmc_out_marginal_delta, maxspecies = 20)
+```
+
+
+
+# nu_0 = 0.5
+
+```{r}
+nu_0 = 0.5
+set.seed(2)
+system.time({mcmc_out_marginal_delta = FitOneVariableParamSpikeAndSlabDelay_marginal_delta_slow(data = data_input, nu_0 = nu_0, niter = 10000)})
+
+saveRDS(object = mcmc_out_marginal_delta, file = paste("simul_donnees_Marion_p", p, "_nu0_", nu_0, "_marginal_delta.rds", sep = ""))
+
+# mcmc_out_marginal_delta = readRDS(file = paste("simul_donnees_Marion_p", p, "_marginal_delta.rds", sep = ""))
+
+```
+
+
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta, parnames = c("Gamma2", "sigma2")) + scale_y_log10()
+```
+
+```{r}
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("sigma2", "Gamma2")) + scale_x_log10()
+```
+
+```{r}
+CorrelationPlot(mcmc_out = mcmc_out_marginal_delta, parnames = c("Gamma2", "sigma2"))
+```
+
+
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta, parnames = c("psi"))
+```
+```{r}
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("psi"))
+```
+
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta, parnames = c("alpha"))
+```
+
+```{r}
+# PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("eta", "alpha"))
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("alpha"))
+```
+
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta, parnames = c("mu"))
+```
+
+```{r}
+# PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("eta", "alpha"))
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("mu"))
+```
+
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta, parnames = c("beta[1]", "beta[2]", "beta[3]", "beta[4]", "beta[5]", "beta[6]"))
+```
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta,parnames = paste("phi[", 1:9, "]", sep = ""))
+```
+
+```{r}
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("beta"))
+```
+
+```{r}
+# PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("mu", "sigma2", "Gamma2", "psi")) + scale_x_log10()
+```
+```{r}
+posterior_predictive_estimate(data = data_input, mcmc_out = mcmc_out_marginal_delta, maxspecies = 20)
+```
+
+# nu_0 = 1.
+
+```{r}
+nu_0 = 1.
+set.seed(1)
+system.time({mcmc_out_marginal_delta = FitOneVariableParamSpikeAndSlabDelay_marginal_delta_slow(data = data_input, nu_0 = nu_0, niter = 10000)})
+
+saveRDS(object = mcmc_out_marginal_delta, file = paste("simul_donnees_Marion_p", p, "_nu0_", nu_0, "_marginal_delta.rds", sep = ""))
+
+# mcmc_out_marginal_delta = readRDS(file = paste("simul_donnees_Marion_p", p, "_marginal_delta.rds", sep = ""))
+
+```
+
+
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta, parnames = c("Gamma2", "sigma2")) + scale_y_log10()
+```
+
+```{r}
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("sigma2", "Gamma2")) + scale_x_log10()
+```
+
+```{r}
+CorrelationPlot(mcmc_out = mcmc_out_marginal_delta, parnames = c("Gamma2", "sigma2"))
+```
+
+
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta, parnames = c("psi"))
+```
+```{r}
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("psi"))
+```
+
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta, parnames = c("alpha"))
+```
+
+```{r}
+# PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("eta", "alpha"))
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("alpha"))
+```
+
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta, parnames = c("mu"))
+```
+
+```{r}
+# PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("eta", "alpha"))
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("mu"))
+```
+
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta, parnames = c("beta[1]", "beta[2]", "beta[3]", "beta[4]", "beta[5]", "beta[6]"))
+```
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta,parnames = paste("phi[", 1:9, "]", sep = ""))
+```
+
+```{r}
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("beta"))
+```
+
+```{r}
+# PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("mu", "sigma2", "Gamma2", "psi")) + scale_x_log10()
+```
+```{r}
+posterior_predictive_estimate(data = data_input, mcmc_out = mcmc_out_marginal_delta, maxspecies = 20)
+```
+# nu_0 = 10.
+
+```{r}
+nu_0 = 10.
+set.seed(1)
+system.time({mcmc_out_marginal_delta = FitOneVariableParamSpikeAndSlabDelay_marginal_delta_slow(data = data_input, nu_0 = nu_0, niter = 10000)})
+
+saveRDS(object = mcmc_out_marginal_delta, file = paste("simul_donnees_Marion_p", p, "_nu0_", nu_0, "_marginal_delta.rds", sep = ""))
+
+# mcmc_out_marginal_delta = readRDS(file = paste("simul_donnees_Marion_p", p, "_marginal_delta.rds", sep = ""))
+
+```
+
+
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta, parnames = c("Gamma2", "sigma2")) + scale_y_log10()
+```
+
+```{r}
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("sigma2", "Gamma2")) + scale_x_log10()
+```
+
+```{r}
+CorrelationPlot(mcmc_out = mcmc_out_marginal_delta, parnames = c("Gamma2", "sigma2"))
+```
+
+
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta, parnames = c("psi"))
+```
+```{r}
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("psi"))
+```
+
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta, parnames = c("alpha"))
+```
+
+```{r}
+# PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("eta", "alpha"))
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("alpha"))
+```
+
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta, parnames = c("mu"))
+```
+
+```{r}
+# PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("eta", "alpha"))
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("mu"))
+```
+
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta, parnames = c("beta[1]", "beta[2]", "beta[3]", "beta[4]", "beta[5]", "beta[6]"))
+```
+```{r}
+traceplot(mcmc.out = mcmc_out_marginal_delta,parnames = paste("phi[", 1:9, "]", sep = ""))
+```
+
+```{r}
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("beta"))
+```
+
+```{r}
+# PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("mu", "sigma2", "Gamma2", "psi")) + scale_x_log10()
+```
+```{r}
+posterior_predictive_estimate(data = data_input, mcmc_out = mcmc_out_marginal_delta, maxspecies = 20)
+```

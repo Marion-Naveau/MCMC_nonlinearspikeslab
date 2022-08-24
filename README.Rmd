@@ -1,0 +1,150 @@
+---
+title: "nonlinearspikeslab"
+output:
+  md_document:
+    variant: markdown_github
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**n.b.:** to update this file, you can change README.Rmd then run `make readme` in the command line.
+
+
+# nonlinearspikeslab
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+<!--ts-->
+<!--te-->
+
+Spike and slab variable selection in nonlinear models
+
+## Installation
+
+Clone the repository to a local folder using a command like:
+
+
+``` bash
+git clone git@forgemia.inra.fr:konkam/nonlinearspikeslab.git
+```
+
+or in case the previous does not work:
+
+``` bash
+git clone https://forgemia.inra.fr/konkam/nonlinearspikeslab.git
+```
+
+Then: 
+
+2) Open RStudio, open a new project inside the newly created folder
+
+3) Press ctrl + maj + B
+
+## Example 1: regression on the final size parameter
+
+```{r}
+library(nonlinearspikeslab)
+library(nimble)
+library(tidyverse)
+```
+
+
+```{r}
+set.seed(0)
+data = SimulateDataOneVariableParam(p=10)
+data
+```
+
+### View simulated data
+
+```{r}
+PlotSimulatedData(data)
+```
+
+### Fit Spike and Slab model with fixed parameters
+
+
+
+```{r}
+mcmc_out = FitOneVariableParamSpikeAndSlab_fixed_sigmagamma(data, nu_0 = 10^(-4))
+```
+```{r}
+posterior_on_number_of_covariates_selected(mcmc_out, warmup_prop = 0)
+```
+
+```{r, fig.height=20, fig.width=20}
+traceplot(mcmc_out)
+```
+```{r}
+posterior_predictive_estimate(data = data, mcmc_out = mcmc_out)
+```
+
+### Fit Spike and Slab model 
+
+
+```{r}
+mcmc_out = FitOneVariableParamSpikeAndSlab(data, nu_0 = 10^(-4))
+```
+```{r}
+posterior_on_number_of_covariates_selected(mcmc_out, warmup_prop = 0)
+```
+
+```{r, fig.height=20, fig.width=20}
+traceplot(mcmc_out)
+```
+```{r}
+posterior_predictive_estimate(data = data, mcmc_out = mcmc_out)
+```
+
+### Prior posterior plot
+
+```{r}
+PriorPosteriorPlotScalarParams(mcmc_out, parnames = c("sigma", "Gamma", "omega", "alpha", "mu")) + scale_x_log10()
+```
+
+```{r}
+PriorPosteriorPlotLargeVectorParams(mcmc_out, parnames = c("beta", "delta")) 
+```
+
+```{r}
+PriorPosteriorPlotLargeVectorParams(mcmc_out, parnames = c("beta")) + scale_x_log10()
+```
+
+## Example 2: regression on the delay parameter, after reparametrisation
+
+```{r}
+set.seed(0)
+data = SimulateDataOneVariableParam_reparam(beta = c(0.3, 0.3, 0.15, 0, 0, 0, 0, 0, 0), psi2 = 0.25, psi3 = 0.15, sigma = 1.)
+data
+```
+
+### View simulated data
+
+```{r}
+PlotSimulatedData(data)
+```
+```{r}
+mcmc_out = FitOneVariableParamSpikeAndSlabDelayReparam(data, nu_0 = 10^(-4), niter = 15000)
+```
+```{r}
+posterior_on_number_of_covariates_selected(mcmc_out)
+```
+
+```{r, fig.height=20, fig.width=20}
+traceplot(mcmc_out)
+```
+```{r}
+posterior_predictive_estimate(data = data, mcmc_out = mcmc_out)
+```
+```{r}
+PriorPosteriorPlotScalarParams(mcmc_out = mcmc_out, parnames = c("alpha", "sigma2", "psi1", "psi2", "psi3", "Gamma2"))
+```
+
+```{r}
+PriorPosteriorPlotScalarParams(mcmc_out = mcmc_out, parnames = c("alpha", "sigma2", "psi1", "psi2", "psi3", "Gamma2")) + scale_x_log10()
+```
+

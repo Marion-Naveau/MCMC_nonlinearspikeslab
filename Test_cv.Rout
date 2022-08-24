@@ -1,0 +1,238 @@
+
+R version 4.1.1 (2021-08-10) -- "Kick Things"
+Copyright (C) 2021 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R est un logiciel libre livré sans AUCUNE GARANTIE.
+Vous pouvez le redistribuer sous certaines conditions.
+Tapez 'license()' ou 'licence()' pour plus de détails.
+
+R est un projet collaboratif avec de nombreux contributeurs.
+Tapez 'contributors()' pour plus d'information et
+'citation()' pour la façon de le citer dans les publications.
+
+Tapez 'demo()' pour des démonstrations, 'help()' pour l'aide
+en ligne ou 'help.start()' pour obtenir l'aide au format HTML.
+Tapez 'q()' pour quitter R.
+
+INFO : Large data should be stored in your work/ folder. 
+ 
+[Sauvegarde de la session précédente restaurée]
+
+> rm(list = ls())
+> 
+> library(ggplot2)
+> library(nlme)
+> library(cowplot)
+> library(glmnet)
+Le chargement a nécessité le package : Matrix
+Loaded glmnet 4.1-3
+> library(mvnfast)
+> library(nimble)
+nimble version 0.12.2 is loaded.
+For more information on NIMBLE and a User Manual,
+please visit https://R-nimble.org.
+
+Attachement du package : ‘nimble’
+
+L'objet suivant est masqué depuis ‘package:stats’:
+
+    simulate
+
+> library(microbenchmark)
+> library(nonlinearspikeslab)
+> library(tidyverse)
+── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──
+✔ tibble  3.1.6     ✔ dplyr   1.0.8
+✔ tidyr   1.2.0     ✔ stringr 1.4.0
+✔ readr   2.1.2     ✔ forcats 0.5.1
+✔ purrr   0.3.4     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::collapse() masks nlme::collapse()
+✖ tidyr::expand()   masks Matrix::expand()
+✖ dplyr::filter()   masks stats::filter()
+✖ dplyr::lag()      masks stats::lag()
+✖ tidyr::pack()     masks Matrix::pack()
+✖ tidyr::unpack()   masks Matrix::unpack()
+> 
+> source("nimble_fit_functions.R")
+> 
+> ###### Simulation des donnees ######
+> 
+> n <- 200 # nb d'individus
+> J <- 10 # nb de repetitions
+> p <- 500 # nb de covariables
+> sigma2 <- 30 # variance residuelle des y
+> Gamma2 <- 200 # variance inter-individuelle des phi_i
+> mu <- 1200 # intercept
+> beta <- c(100, 50, 20, rep(0, p - 3)) # vecteur d'effets fixes
+> betatild <- c(mu, beta)
+> c0 <- 200 # parametre de la fct g
+> c2 <- 300 # parametre de la fct g, doit etre different de 0
+> psi <- c(c0, c2)
+> 
+> g <- function(phi_i, psi, t_ij) {
++   return(psi[1] / (1 + exp(-(t_ij - phi_i) / psi[2])))
++ }
+> 
+> # Simulation des parametres individuels phi_i
+> s <- 1
+> set.seed(s)
+> phi <- rep(0, n)
+> Vtild <- matrix(NA, nrow = n, ncol = p + 1)
+> Vtild[, 1] <- rep(1, n)
+> for (i in 1:n) {
++   # simulation de V_i
++   Vtild[i, 2:(p + 1)] <- rmvn(1, mu = rep(0, p), sigma = diag(1, p))
++ }
+> Vtild[, c(2:(p + 1))] <- scale(Vtild[, c(2:(p + 1))])
+> # simulation de phi_i
+> for (i in 1:n) {
++   phi[i] <- sum(betatild * Vtild[i, ]) + rnorm(1, mean = 0, sd = sqrt(Gamma2))
++ }
+> V <- Vtild[, -1]
+> # Simulation des données observées y
+> 
+> Y <- rep(0, n * J) # vecteur des y_ij avec y_ij=Y[(i-1)*J+j]
+> t <- rep(seq(150, 3000, length = J), n) # vecteur des t_ij avec t_ij=t[(i-1)*J+j]
+> for (i in 1:n) {
++   for (j in 1:J) {
++     Y[(i - 1) * J + j] <- g(phi_i = phi[i], psi = psi, t_ij = t[(i - 1) * J + j]) + rnorm(1, mean = 0, sd = sqrt(sigma2))
++   }
++ }
+> 
+> Id <- rep(c(1:n), each = J)
+> data <- data.frame(Id, Y, t)
+> id <- as.matrix(Id)
+> data2 <- data[id <= 30, ]
+> ggplot(data2, aes(x = t, y = Y, group = Id)) +
++   geom_point() +
++   geom_line() +
++   theme_bw()
+> 
+> 
+> # Valeurs initiales des paramètres à estimer avec le MCMC-SAEM
+> betatild_init <- c(1400, rep(100, 10), rep(1, p - 10))
+> sigma2_init <- 100
+> Gamma2_init <- 5000
+> 
+> eta_init <- rep(400, 2)
+> Omega_init <- rep(20, 2) # Omega=(w_1^2,w_2^2)
+> 
+> # Hyperparamètres
+> M <- 20
+> Nu <- 10^(seq(-2, 2, length.out = M)) # grille de nu0 tq nu0/nu1 dans [10^(-6),10^(-3)]
+> nu1 <- 12000 # parametre slab
+> nu_Gamma <- 1 # parametre prior Gamma2
+> lb_Gamma <- 1 # parametre prior Gamma2
+> nu_sigma <- 1 # parametre prior sigma2
+> lb_sigma <- 1 # parametre prior sigma2
+> a <- 1 # parametre prior theta
+> b <- p # parametre prior theta
+> sigma2_mu <- 3000^2 # parametre prior mu
+> rho2 <- rep(1200, 2) # parametre prior eta
+> nu_omega <- 1 # parametre prior omega_m
+> lb_omega <- 1 # parametre prior omega_m
+> 
+> 
+> data_input = data %>%
++   as_tibble() %>%
++   left_join(V %>%
++               as_tibble() %>%
++               rowid_to_column("Id")) %>%
++   rename(times = t, i = Id)
+Joining, by = "Id"
+Message d'avis :
+The `x` argument of `as_tibble.matrix()` must have unique column names if `.name_repair` is omitted as of tibble 2.0.0.
+Using compatibility `.name_repair`.
+This warning is displayed once every 8 hours.
+Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated. 
+> 
+> 
+> nu_0 = 0.01
+> set.seed(1)
+> mcmc_out=FitOneVariableParamSpikeAndSlabDelay_marginal_delta_slow(data = data_input, nu_0 = nu_0, niter = 4000)
+Defining model
+  [Note] Registering 'dmix2norm_unsafe' as a distribution based on its use in BUGS code. If you make changes to the nimbleFunctions for the distribution, you must call 'deregisterDistributions' before using the distribution in BUGS code for those changes to take effect.
+Building model
+Setting data and initial values
+Running calculate on model
+  [Note] Any error reports that follow may simply reflect missing values in model variables.
+Checking model sizes and dimensions
+  [Note] safeDeparse: truncating deparse output to 1 lines.
+===== Monitors =====
+thin = 1: alpha, alpha_prior, eta, eta_prior, Gamma2, Gamma2_prior, mu, mu_prior, sigma2, sigma2_prior
+===== Samplers =====
+RW sampler (707)
+  - Gamma2
+  - sigma2
+  - alpha
+  - eta[]  (2 elements)
+  - beta[]  (500 elements)
+  - psi[]  (2 elements)
+  - phi[]  (200 elements)
+posterior_predictive_branch sampler (2)
+  - alpha_prior
+  - eta_prior
+posterior_predictive sampler (3)
+  - sigma2_prior
+  - Gamma2_prior
+  - mu_prior
+conjugate sampler (1)
+  - mu
+Defining model
+Building model
+Setting data and initial values
+Running calculate on model
+  [Note] Any error reports that follow may simply reflect missing values in model variables.
+Checking model sizes and dimensions
+Checking model calculations
+  [Note] safeDeparse: truncating deparse output to 1 lines.
+Compiling
+  [Note] This may take a minute.
+  [Note] Use 'showCompilerOutput = TRUE' to see C++ compilation details.
+Running chain 1 ...
+|-------------|-------------|-------------|-------------|
+|-------------------------------------------------------|
+Running chain 2 ...
+|-------------|-------------|-------------|-------------|
+|-------------------------------------------------------|
+Running chain 3 ...
+|-------------|-------------|-------------|-------------|
+|-------------------------------------------------------|
+  [Warning] There are individual pWAIC values that are greater than 0.4. This may indicate that the WAIC estimate is unstable (Vehtari et al., 2017), at least in cases without grouping of data nodes or multivariate data nodes.
+> 
+> save(mcmc_out,file="Test_cv_MCMC_p500_2.Rdata")
+> 
+> # load("Test_cv_MCMC_p500.Rdata")
+> load("Test_cv_MCMC_p500_2.Rdata") #avec bons hyperparam et init
+> 
+> #load("Test_cv_MCMC_p1000.Rdata")
+> 
+> #load("Test_cv_MCMC_p1500.Rdata")
+> 
+> traceplot(mcmc.out = mcmc_out, parnames = c("Gamma2", "sigma2")) + scale_y_log10()
+> PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out, parnames = c("sigma2", "Gamma2")) + scale_x_log10()
+> 
+> traceplot(mcmc.out = mcmc_out, parnames = c("psi"))
+> PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out, parnames = c("psi"))
+New names:
+* psi_prior -> psi_prior...1
+* psi_prior -> psi_prior...2
+> 
+> traceplot(mcmc.out = mcmc_out, parnames = c("alpha"))
+> PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out, parnames = c("alpha"))
+> 
+> traceplot(mcmc.out = mcmc_out, parnames = c("mu"))
+> PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out, parnames = c("mu"))
+> 
+> traceplot(mcmc.out = mcmc_out, parnames = c("beta[1]", "beta[2]", "beta[3]", "beta[4]", "beta[5]", "beta[6]"))
+> #PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out, parnames = c("beta"))
+> 
+> traceplot(mcmc.out = mcmc_out,parnames = paste("phi[", 1:9, "]", sep = ""))
+> posterior_predictive_estimate(data = data_input, mcmc_out = mcmc_out, maxspecies = 20)
+> 
+> 
+> proc.time()
+utilisateur     système      écoulé 
+   1062.124      16.107    1081.154 

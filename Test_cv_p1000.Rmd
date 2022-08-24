@@ -1,0 +1,76 @@
+---
+title: "Test_cv_p1000"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(nonlinearspikeslab)
+library(nimble)
+library(tidyverse)
+```
+
+
+```{r}
+nu_0 = 0.01
+
+# #data_input=Simul_donnees_Marion avec p=1000
+#set.seed(1)
+#mcmc_out=FitOneVariableParamSpikeAndSlabDelay_marginal_delta_slow(data = data_input, nu_0 = nu_0, niter = 5000)
+
+#save(mcmc_out,file="Test_cv_MCMC_p1000.Rdata")
+
+load("Test_cv_MCMC_p1000.Rdata")
+```
+
+
+```{r}
+traceplot(mcmc.out = mcmc_out, parnames = c("Gamma2", "sigma2")) + scale_y_log10()
+```
+
+```{r}
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out, parnames = c("sigma2", "Gamma2")) + scale_x_log10()
+```
+
+```{r}
+CorrelationPlot(mcmc_out = mcmc_out, parnames = c("Gamma2", "sigma2"))
+```
+
+
+```{r}
+traceplot(mcmc.out = mcmc_out, parnames = c("psi"))
+```
+```{r}
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out, parnames = c("psi"))
+```
+
+```{r}
+traceplot(mcmc.out = mcmc_out, parnames = c("alpha"))
+```
+
+```{r}
+# PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("eta", "alpha"))
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out, parnames = c("alpha"))
+```
+
+```{r}
+traceplot(mcmc.out = mcmc_out, parnames = c("mu"))
+```
+
+```{r}
+# PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out_marginal_delta, parnames = c("eta", "alpha"))
+PriorPosteriorPlotSmallVectorParams(mcmc_out = mcmc_out, parnames = c("mu"))
+```
+
+```{r}
+traceplot(mcmc.out = mcmc_out, parnames = c("beta[1]", "beta[2]", "beta[3]", "beta[4]", "beta[5]", "beta[6]"))
+```
+```{r}
+traceplot(mcmc.out = mcmc_out,parnames = paste("phi[", 1:9, "]", sep = ""))
+```
+
